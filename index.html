@@ -1,35 +1,31 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Palavra Secreta</title>
-    <link rel="stylesheet" href="css/style.css">
+<meta charset="UTF-8">
+<title>Descubra a palavra Oculta</title>
+<link rel="stylesheet" href="style.css">
+
 </head>
+
 <body>
-    <main>
-        <section class="comeco">
-            <h1>Descubra A Palavra</h1>
-            <input type="password" id="entrada-palavra" class="entrada-letra" placeholder="Palavra secreta">
-            <button id="btn-comecar">Começar</button>
-        </section>
-        <section class="status">
-            <section id="areaSegredo">
-                <label>Digite a Palavra Secreta</label>
-                <br><br>
-                <section id="areaJogo"></section>
-            </section>
-            <div class="input-area">
-                <input type="text" id="tentativa" class="entrada-letra" maxlength="1" placeholder="Letra">
-                <button id="btn-tentar">Enviar</button>
-            </div>
-            <div class="info">
-                <p>Tentativas restantes: <span id="Tentativas">6</span></p>
-                <p>Pontuação: <span id="pontuação">0</span></p>
-                <p>Letras usadas: <span id="letra-usada"></span></p>
-            </div>
-        </section>
-    </main>
-    <script src="assets/js/script.js"></script>
+<div id="DIVCORPO">
+<h1 class="titulo">Descubra a palavra Oculta</h1>
+
+<div id="forca">
+    <pre id="boneco">
+ (ദ്ദി˙ᗜ˙)
+    </pre>
+</div>
+
+<h2 id="palavra"></h2>
+<p>Dica: <span id="dica"></span></p>
+<p>Letras Erradas: <span id="letrasErradas"></span></p>
+
+<input type="text" id="letra" maxlength="1">
+<button class="button" onclick="tentarLetra()">Tentar</button>
+<button class="button" onclick="mostrarDica()">Mostrar Dica</button>
+<button class="button" onclick="reiniciarJogo()">Reiniciar</button>
+</div>
+<script src="script.js"></script>
 </body>
 </html>
