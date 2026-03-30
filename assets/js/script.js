@@ -1,101 +1,121 @@
-let secretWord = "";
-let attemptsLeft = 6;
-let guessedLetters = [];
-let displayWord = [];
-let pontuacao = 0;
+const palavras = [
+"banana","morango","abacaxi","laranja","uva",
+"flamengo","palmeiras","barcelona","chelsea"
+];
 
-// ELEMENTOS HTML
-const displayPalavra = document.getElementById("areaJogo");
-const displayTentativas = document.getElementById("Tentativas");
-const displayPontuacao = document.getElementById("pontuação");
-const letrasUsadas = document.getElementById("letra-usada");
-const inputPalavra = document.getElementById("entrada-palavra");
-const btnComecar = document.getElementById("btn-comecar");
-const inputTentativa = document.getElementById("tentativa");
-const btnTentar = document.getElementById("btn-tentar");
+const dicas = [
+  "Fruta amarela e doce",        // banana
+  "Fruta vermelha muito doce",   // morango
+  "Fruta tropical com casca dura", // abacaxi
+  "Fruta cítrica laranja",       // laranja
+  "Fruta pequena e roxa",        // uva
+  "Time de futebol carioca",    // flamengo
+  "Time paulista famoso",        // palmeiras
+  "Time espanhol famoso",        // barcelona
+  "Time inglês da Premier League" // chelsea
+];
 
-// INICIAR JOGO
-function iniciarJogo() {
-    secretWord = inputPalavra.value.toUpperCase();
-    if (secretWord === "") {
-        alert("Digite uma palavra!");
-        return;
-    }
-    inputPalavra.value = "";
-    displayWord = Array(secretWord.length).fill("_");
-    attemptsLeft = 6;
-    guessedLetters = [];
-    pontuacao = 0;
-    renderWord();
+// Sorteia palavra e dica
+let indice = Math.floor(Math.random() * palavras.length);
+let palavra = palavras[indice];
+let dica = dicas[indice];
+
+// Inicializa o jogo
+let palavraOculta = [];
+let letrasErradas = [];
+let erros = 0;
+
+for(let i=0;i<palavra.length;i++){
+    palavraOculta.push("_");
 }
 
-// MOSTRAR PALAVRA
-function renderWord() {
-    displayPalavra.innerHTML = "";
-    displayWord.forEach(letra => {
-        const span = document.createElement("span");
-        span.innerText = letra;
-        displayPalavra.appendChild(span);
-    });
-    displayTentativas.innerText = attemptsLeft;
-    displayPontuacao.innerText = pontuacao;
-    letrasUsadas.innerText = guessedLetters.join(" ");
+document.getElementById("palavra").innerText = palavraOculta.join(" ");
+document.getElementById("dica").style.display = "none"; // dica escondida no início
+
+function mostrarDica() {
+    document.getElementById("dica").innerText = dica;
+    document.getElementById("dica").style.display = "inline";
 }
 
-// TENTAR LETRA
-function tentarLetra() {
-    // CORREÇÃO 1: bloqueio adicionado para quando o jogo ainda não foi iniciado
-    // Antes, como displayWord estava vazio, !displayWord.includes("_") retornava
-    // true imediatamente, fazendo o jogo declarar vitória com qualquer letra
-    if (secretWord === "") {
-        alert("Inicie o jogo primeiro!");
-        return;
+const estagios = [
+` ( ˶ˆᗜˆ˵ ) `,
+` (˶º⤙º˶) `,
+` ( ¬_¬ ) `,
+` ˚‧º·(˚ ˃̣̣̥⌓˂̣̣̥ )‧º·˚ `,
+` (ﾉ｀□´)ﾉ⌒┻━┻ `,
+` (╥﹏╥) `,
+` ̿̿ ̿̿ ̿̿ ̿’̿’\\̵͇̿̿\\з= ( ▀ ͜͞ʖ▀) =ε/̵͇̿̿/’̿’̿ ̿ ̿̿ ̿̿ `
+];
+
+function tentarLetra(){
+    let input = document.getElementById("letra");
+    let letra = input.value.toLowerCase();
+    input.value="";
+
+    if(!letra) return;
+if (palavraOculta.includes(letra) || letrasErradas.includes(letra)) {
+    return; // ignora letra repetida
     }
-
-    const letra = inputTentativa.value.toUpperCase();
-    inputTentativa.value = "";
-
-    // CORREÇÃO 2: adicionado !/^[A-Z]$/.test(letra) para bloquear números e símbolos
-    if (letra === "" || guessedLetters.includes(letra) || !/^[A-Z]$/.test(letra)) {
-        return;
-    }
-
-    guessedLetters.push(letra);
-
-    if (secretWord.includes(letra)) {
-        for (let i = 0; i < secretWord.length; i++) {
-            if (secretWord[i] === letra) {
-                displayWord[i] = letra;
-                pontuacao += 10;
+    if(palavra.includes(letra)){
+        for(let i=0;i<palavra.length;i++){
+            if(palavra[i]===letra){
+                palavraOculta[i]=letra;
             }
         }
     } else {
-        attemptsLeft--;
+        if(!letrasErradas.includes(letra)){
+            letrasErradas.push(letra);
+            erros++;
+        }
+    }
+    
+
+    document.getElementById("palavra").innerText = palavraOculta.join(" ");
+    document.getElementById("letrasErradas").innerText = letrasErradas.join(", ");
+    document.getElementById("boneco").innerText = estagios[erros];
+
+
+
+
+    if(!palavraOculta.includes("_")){
+        alert("🎉 Você venceu!");
+        location.reload();
     }
 
-    renderWord();
-    verificarFim();
+    if (erros >= estagios.length - 1) {
+    alert("💀 Você perdeu! Palavra: " + palavra);
+    location.reload();
+    }
 }
 
-// VERIFICAR FIM
-function verificarFim() {
-    // CORREÇÃO 3: guarda adicionada para evitar verificação com jogo não iniciado
-    // displayWord.length === 0 também cobre o estado inicial antes de iniciarJogo()
-    if (secretWord === "" || displayWord.length === 0) return;
+function reiniciarJogo(){
+    // sorteia nova palavra
+    indice = Math.floor(Math.random() * palavras.length);
+    palavra = palavras[indice];
+    dica = dicas[indice];
 
-    // CORREÇÃO 4: bug original usava " _ " (com espaços) em vez de "_" (sem espaços)
-    // Como o array é preenchido com fill("_"), a comparação correta é sem espaços
-    if (!displayWord.includes("_")) {
-        alert("Você ganhou! Pontuação: " + pontuacao);
-        // CORREÇÃO 5: return adicionado para não cair no bloco de derrota logo abaixo
-        // quando attemptsLeft chega a 0 exatamente na última letra correta
-        return;
-    }
-    if (attemptsLeft === 0) {
-        alert("Você perdeu! A palavra era: " + secretWord);
-    }
-}
+    // reseta variáveis
+    palavraOculta = [];
+    letrasErradas = [];
+    erros = 0;
 
-// EVENTOS
-btnComecar.addEventListener("click", iniciarJogo);
-btnTentar.addEventListener("click", tentarLetra);
+    for(let i=0;i<palavra.length;i++){
+        palavraOculta.push("_");
+    }
+
+    // atualiza tela
+    document.getElementById("palavra").innerText = palavraOculta.join(" ");
+    document.getElementById("letrasErradas").innerText = "";
+    document.getElementById("boneco").innerText = estagios[0];
+
+    // esconde dica novamente
+    document.getElementById("dica").innerText = "";
+    document.getElementById("dica").style.display = "none";
+}function normalizar(texto){
+    return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+};
+document.getElementById("letra").addEventListener("keypress", function(e){
+    if(e.key === "Enter"){
+        tentarLetra();
+    }
+});
